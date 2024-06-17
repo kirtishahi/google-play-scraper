@@ -1,6 +1,7 @@
 import json
 from time import sleep
 from typing import List, Optional, Tuple
+from datetime import datetime
 
 from google_play_scraper import Sort
 from google_play_scraper.constants.element import ElementSpecs
@@ -173,3 +174,23 @@ def reviews_all(app_id: str, sleep_milliseconds: int = 0, **kwargs) -> list:
             sleep(sleep_milliseconds / 1000)
 
     return result
+
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime):
+            return obj.isoformat()
+        return super().default(obj)
+
+
+# Testing part
+# Testing part
+if __name__ == "__main__":
+    sample_app_id = "com.rovio.angrybirds"  # Angry Birds app ID
+    print("Fetching reviews for:", sample_app_id)
+
+    # Fetch a limited number of reviews
+    reviews_result, _ = reviews(app_id=sample_app_id, count=500)
+
+    # Print the results in a readable JSON format
+    print(json.dumps(reviews_result, indent=4, cls=DateTimeEncoder))

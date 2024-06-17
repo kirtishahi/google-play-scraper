@@ -6,6 +6,7 @@ from google_play_scraper.features.app import app
 class TestApp(TestCase):
     def test_e2e_scenario_1(self):
         result = app("air.com.Tatsuki.CookieBreaker")
+        print(result)
 
         self.assertEqual("Cookie Breaker!!!", result["title"])
         self.assertEqual("air.com.Tatsuki.CookieBreaker", result["appId"])
