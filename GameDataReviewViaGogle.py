@@ -218,12 +218,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("--batch_size", type=int, default=10, help="Batch size for fetching reviews")
     parser.add_argument("--output_dir", type=str, default="./output", help="Output directory for CSV files")
-    parser.add_argument(
-                        "--input_file",
-                        type=str,
-                        default="./csv/merged_csv_20240617-1.csv",
-                        help="Input Excel file with app IDs"
-    )
+    parser.add_argument("--input_file", type=str, default="./csv/merged_csv_20240617-1.csv",
+                        help="Input Excel file with app IDs")
+    parser.add_argument("--threads", type=int,
+                        help="Number of threads to use for fetching reviews", default=5)
     args = parser.parse_args()
     # Read app_id from Excel sheet
     excel_file = args.input_file
@@ -240,7 +238,7 @@ if __name__ == "__main__":
         all_reviews = []  # Reset for each batch
 
         # Use ThreadPoolExecutor for parallel fetching
-        with ThreadPoolExecutor(max_workers=5) as executor:
+        with ThreadPoolExecutor(max_workers=args.threads) as executor:
             futures = {
                 executor.submit(fetch_reviews_for_app, row.appId, row.title): row
                 for row in batch_app_ids.itertuples(index=False)
