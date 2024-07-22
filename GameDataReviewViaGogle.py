@@ -1,4 +1,6 @@
 import json
+
+import argparse
 import pandas as pd
 from time import sleep
 from typing import List, Optional, Tuple
@@ -24,6 +26,7 @@ logging.basicConfig(
     ]
 )
 
+
 class _ContinuationToken:
     __slots__ = (
         "token",
@@ -45,6 +48,7 @@ class _ContinuationToken:
         self.count = count
         self.filter_score_with = filter_score_with
         self.filter_device_with = filter_device_with
+
 
 def _fetch_review_items(
         url: str,
@@ -77,6 +81,7 @@ def _fetch_review_items(
     if len(results) == 0 or len(results[0]) == 0:
         return [], token
     return results[0], token
+
 
 def reviews(
         app_id: str,
@@ -158,6 +163,7 @@ def reviews(
         ),
     )
 
+
 def reviews_all(app_id: str, sleep_milliseconds: int = 0, **kwargs) -> list:
     kwargs.pop("count", None)
     kwargs.pop("continuation_token", None)
@@ -187,10 +193,12 @@ def reviews_all(app_id: str, sleep_milliseconds: int = 0, **kwargs) -> list:
 
     return result
 
+
 def save_reviews_to_csv(reviews: List[dict], output_file: str):
     df = pd.DataFrame(reviews)
     df.to_csv(output_file, index=False)
     logging.info(f"Saved {len(reviews)} reviews to {output_file}")
+
 
 def fetch_reviews_for_app(app_id: str, title: str) -> List[dict]:
     logging.info(f"Fetching reviews for: {app_id} - {title}")
@@ -203,12 +211,25 @@ def fetch_reviews_for_app(app_id: str, title: str) -> List[dict]:
         logging.error(f"Error fetching reviews for app {app_id}: {e}")
         return []
 
+
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(
+        description="Fine-tune GPT-2 on the KP20k dataset and evaluate the model."
+    )
+    parser.add_argument("--batch_size", type=int, default=10, help="Batch size for fetching reviews")
+    parser.add_argument("--output_dir", type=str, default="./output", help="Output directory for CSV files")
+    parser.add_argument(
+                        "--input_file",
+                        type=str,
+                        default="./csv/merged_csv_20240617-1.csv",
+                        help="Input Excel file with app IDs"
+    )
+    args = parser.parse_args()
     # Read app_id from Excel sheet
-    excel_file = "/Users/kirtishahi/IdeaProjects/google-play-scraper/output/merged_csv_20240617-1.csv"
+    excel_file = args.input_file
     df_app_ids = pd.read_csv(excel_file)
 
-    batch_size = 10
+    batch_size = args.batch_size
     batch_count = 0
 
     # Assuming the app IDs and game titles are in columns named 'appId' and 'title'
@@ -230,7 +251,7 @@ if __name__ == "__main__":
 
         batch_count += 1
         # Define output CSV file name for the current batch
-        output_csv_file = f"all_app_reviews_batch_{batch_count}.csv"
+        output_csv_file = f"{args.output_dir}/all_app_reviews_batch_{batch_count}.csv"
 
         # Save current batch of reviews to a CSV
         save_reviews_to_csv(all_reviews, output_csv_file)
