@@ -6,6 +6,7 @@ from time import sleep
 from typing import List, Optional, Tuple
 from datetime import datetime
 import logging
+import wandb
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 from google_play_scraper import Sort
@@ -25,6 +26,21 @@ logging.basicConfig(
         logging.StreamHandler()
     ]
 )
+
+
+# wandb to track and logs
+wandb.init(
+    # set the wandb project where this run will be logged
+    project="Google play Scapper",
+    # track hyperparameters and run metadata
+    config={
+        "learning_rate": 0.09,
+        "architecture": "Dummy",
+        "dataset": "Dummy",
+        "epochs": 3,
+    },
+)
+
 
 
 class _ContinuationToken:
@@ -255,3 +271,5 @@ if __name__ == "__main__":
         save_reviews_to_csv(all_reviews, output_csv_file)
 
     logging.info("All batches processed.")
+
+wandb.finish()
