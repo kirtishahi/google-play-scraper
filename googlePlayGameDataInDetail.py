@@ -22,7 +22,7 @@ def fetch_app_details(app_id):
         print(f"Failed to fetch details for {app_id}: {e}")
 
 # Iterate over the 'appId' column and fetch details
-for app_id in df['appId'][:5]:
+for app_id in df['appId']:
     fetch_app_details(app_id)
 
 # Convert the list of details into a DataFrame
