@@ -3,7 +3,7 @@ from google_play_scraper import app
 
 
 # Read the CSV file
-input_file_path = 'merged_csv_20240617-1 (1).csv'  # Replace with your actual CSV file path
+input_file_path = 'GooglePlayGame_BasicInfo.csv'  # Replace with your actual CSV file path
 output_file_path = 'app_details_output.csv'  # File where the output data will be stored
 
 # Read the CSV file into a DataFrame
